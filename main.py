@@ -7,13 +7,13 @@ second_cell = Cell(win.canvas)
 third_cell = Cell(win.canvas)
 fourth_cell = Cell(win.canvas)
 fifth_cell = Cell(win.canvas)
-first_cell.draw(Point(10, 10), Point(90, 90))
-second_cell.top_wall = False
-second_cell.draw(Point(100, 100), Point(160, 160))
-third_cell.bottom_wall = False
-third_cell.draw(Point(200, 200), Point(270, 270))
-fourth_cell.left_wall = False
-fourth_cell.draw(Point(300, 300), Point(360, 360))
-fifth_cell.right_wall = False
-fifth_cell.draw(Point(450, 450), Point(550, 550))
+first_cell.draw(Point(236, 10), Point(45, 471))
+second_cell.draw(Point(18, 173), Point(66, 160))
+third_cell.draw(Point(84, 212), Point(270, 270))
+fourth_cell.draw(Point(342, 75), Point(360, 360))
+fifth_cell.draw(Point(745, 323), Point(656, 156))
+first_cell.draw_move(second_cell)
+first_cell.draw_move(third_cell)
+first_cell.draw_move(fourth_cell, undo=True)
+first_cell.draw_move(fifth_cell)
 win.wait_for_close()

@@ -36,3 +36,16 @@ class Cell:
             Line(Point(self._x1, self._y1), Point(self._x1, self._y2)).draw(self._win, "black")
         if self.right_wall == True:
             Line(Point(self._x2, self._y2), Point(self._x2, self._y1)).draw(self._win, "black")
+
+    def draw_move(self, to_cell, undo=False):
+        center_self_x = ((self._x2 - self._x1) / 2) + self._x1
+        center_self_y = ((self._y2 - self._y1) / 2) + self._y1
+        center_of_self = Point(center_self_x, center_self_y)
+        center_to_x = ((to_cell._x2 - to_cell._x1) / 2) + to_cell._x1
+        center_to_y = ((to_cell._y2 - to_cell._y1) / 2) + to_cell._y1
+        center_of_to = Point(center_to_x, center_to_y)
+        if undo == False:
+            Line(center_of_self, center_of_to).draw(self._win, "red")
+        if undo == True:
+            Line(center_of_self, center_of_to).draw(self._win, "gray")
+
