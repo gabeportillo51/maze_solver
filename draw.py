@@ -1,7 +1,8 @@
 import time
+import random
 
 class Maze:
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None):
+    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None, seed=None):
         self.x1 = x1
         self.y1 = y1
         self.num_rows = num_rows
@@ -9,6 +10,8 @@ class Maze:
         self.cell_size_x = cell_size_x
         self.cell_size_y = cell_size_y
         self.win = win
+        if seed is not None:
+            self.seed = random.seed(seed)
         self._create_cells()
 
     def _create_cells(self):
@@ -41,6 +44,48 @@ class Maze:
         if self.win is not None:
             self._animate()
 
+    def _break_walls_r(self, i, j):
+        self._cells[i][j].visited = True
+        while True:
+            to_visit = []
+            if i-1 >= 0:
+                if self._cells[i-1][j].visited == False:
+                    to_visit.append((i-1, j))
+            if i + 1 <= self.num_cols - 1:
+                if self._cells[i+1][j].visited == False:
+                    to_visit.append((i+1, j))
+            if j-1 >= 0:
+                if self._cells[i][j-1].visited == False:
+                    to_visit.append((i, j-1))
+            if j + 1 <= self.num_rows - 1:
+                if self._cells[i][j+1].visited == False:
+                    to_visit.append((i, j+1))
+            if len(to_visit) == 0:
+                self._draw_cell(i, j)
+                return
+            rand_next = random.randrange(0, len(to_visit))
+            next = to_visit[rand_next]
+            to_visit.clear()
+            if next[0] < i:
+                self._cells[i][j].left_wall = False
+                self._cells[next[0]][j].right_wall = False
+            if next[0] > i:
+                self._cells[i][j].right_wall = False
+                self._cells[next[0]][j].left_wall = False
+            if next[1] < j:
+                self._cells[i][j].top_wall = False
+                self._cells[i][next[1]].bottom_wall = False
+            if next[1] > j:
+                self._cells[i][j].bottom_wall = False
+                self._cells[i][next[1]].top_wall = False
+            self._break_walls_r(next[0], next[1])
+        
+    def _reset_cells_visited(self):
+        for column in self._cells:
+            for cell in column:
+                cell.visited = False
+
+
 
 
 class Point:
@@ -68,6 +113,7 @@ class Cell:
         self.bottom_wall = True
         self.left_wall = True
         self.right_wall = True
+        self.visited = False
 
     def draw(self, point_1, point_2):
         self._x1 = point_1.x
