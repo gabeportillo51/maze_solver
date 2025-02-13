@@ -29,20 +29,18 @@ class Maze:
         upper_left = Point(moving_x, moving_y)
         lower_right = Point(moving_x + self.cell_size_x, moving_y + self.cell_size_y)
         self._cells[i][j].draw(upper_left, lower_right)
-        if self.win is not None:
-            self._animate()
+        self._animate()
 
     def _animate(self):
         self.win.redraw()
-        time.sleep(0.007)
+        time.sleep(0.05)
 
     def _break_entrance_and_exit(self):
         self._cells[0][0].top_wall = False
         self._draw_cell(0, 0)
         self._cells[self.num_cols-1][self.num_rows-1].right_wall = False
         self._draw_cell(self.num_cols-1, self.num_rows-1)
-        if self.win is not None:
-            self._animate()
+
 
     def _break_walls_r(self, i, j):
         self._cells[i][j].visited = True
@@ -85,6 +83,47 @@ class Maze:
             for cell in column:
                 cell.visited = False
 
+    def solve(self):
+        return self._solve_r(0, 0)
+    
+    def _solve_r(self, i, j):
+        self._animate()
+        self._cells[i][j].visited = True
+        end = self._cells[self.num_cols-1][self.num_rows-1]
+        if self._cells[i][j] == end:
+            return True
+        if (i-1 >= 0) and (self._cells[i][j].left_wall == False) and (self._cells[i-1][j].visited == False):
+            self._cells[i][j].draw_move(self._cells[i-1][j])
+            if self._solve_r(i-1, j) == True:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i-1][j], undo=True)
+
+        if (j-1 >= 0) and (self._cells[i][j].top_wall == False) and (self._cells[i][j-1].visited == False):
+            self._cells[i][j].draw_move(self._cells[i][j-1])
+            if self._solve_r(i, j-1) == True:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i][j-1], undo=True)
+
+        if (i+1 <= self.num_cols-1) and (self._cells[i][j].right_wall == False) and (self._cells[i+1][j].visited == False):
+            self._cells[i][j].draw_move(self._cells[i+1][j])
+            if self._solve_r(i+1, j) == True:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i+1][j], undo=True)
+
+        if (j+1 <= self.num_rows-1) and (self._cells[i][j].bottom_wall == False) and (self._cells[i][j+1].visited == False):
+            self._cells[i][j].draw_move(self._cells[i][j+1])
+            if self._solve_r(i, j+1) == True:
+                return True
+            else:
+                self._cells[i][j].draw_move(self._cells[i][j+1], undo=True)
+        return False
+
+
+
+
 
 
 
@@ -99,8 +138,7 @@ class Line:
         self.point_2 = point_2
 
     def draw(self, win, fill_color):
-        if win is not None:
-            win.canvas.create_line(self.point_1.x, self.point_1.y, self.point_2.x, self.point_2.y, fill=fill_color, width=2)
+        win.canvas.create_line(self.point_1.x, self.point_1.y, self.point_2.x, self.point_2.y, fill=fill_color, width=2)
 
 class Cell:
     def __init__(self, win=None):
